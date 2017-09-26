@@ -245,6 +245,18 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
     /// ReadOnly.
     private(set) open var revealedIndex: Int = -1
     
+    /// An additional topspace for revealed cell.
+    ///
+    /// Default: 0
+    @IBInspectable open var revealedTopMargin: CGFloat = 0 {
+        didSet {
+            if(revealedTopMargin < 0) {
+                revealedTopMargin = 0
+            }
+            self.collectionView?.performBatchUpdates({ self.invalidateLayout() }, completion: nil)
+        }
+    }
+
     // MARK: Public Actions
     
     /// Action for the InterfaceBuilder to flip back the revealed card.
@@ -790,9 +802,9 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
     private func generateRevealedCardAttribute(_ attribute: HFCardCollectionViewLayoutAttributes) {
         attribute.isRevealed = true
         if(self.collectionViewItemCount == 1) {
-            attribute.frame = CGRect.init(x: 0, y: self.contentOffsetTop + self.spaceAtTopForBackgroundView + 0.01 , width: self.cardCollectionCellSize.width, height: self.cardCollectionCellSize.height)
+            attribute.frame = CGRect.init(x: 0, y: self.contentOffsetTop + self.spaceAtTopForBackgroundView + 0.01 + revealedTopMargin , width: self.cardCollectionCellSize.width, height: self.cardCollectionCellSize.height - revealedTopMargin)
         } else {
-            attribute.frame = CGRect.init(x: 0, y: self.contentOffsetTop + 0.01 , width: self.cardCollectionCellSize.width, height: self.cardCollectionCellSize.height)
+            attribute.frame = CGRect.init(x: 0, y: self.contentOffsetTop + 0.01 + revealedTopMargin, width: self.cardCollectionCellSize.width, height: self.cardCollectionCellSize.height - revealedTopMargin)
         }
     }
     
