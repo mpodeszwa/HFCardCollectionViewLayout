@@ -48,7 +48,7 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
         }
     }
     
-    /// When th collectionView is showing all cards but there are not enough cards to fill the full height,
+    /// When the collectionView is showing all cards but there are not enough cards to fill the full height,
     /// the cardHeadHeight will be expanded to equally fill the height.
     ///
     /// Default: true
@@ -58,6 +58,16 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
         }
     }
     
+    /// When the collectionView is showing all cards but there are not enough cards to fill the full height
+    /// and cardShouldExpandHeadHeight is `false` cards will be aligned to top
+    ///
+    /// Default: true
+    @IBInspectable open var cardShouldBeTopAligned: Bool = true {
+        didSet {
+            self.collectionView?.performBatchUpdates({ self.invalidateLayout() }, completion: nil)
+        }
+    }
+
     /// Stretch the cards when scrolling up
     ///
     /// Default: true
@@ -796,6 +806,12 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
                 attribute.frame = currentFrame
             }
         }
+        if cardShouldExpandHeadHeight == false && cardShouldBeTopAligned == false {
+            let offset = collectionView!.bounds.height - collectionViewContentSize.height
+            if offset > 0 {
+                attribute.frame = attribute.frame.offsetBy(dx: 0, dy: offset)
+            }
+        }
         attribute.isRevealed = false
     }
     
@@ -1145,4 +1161,3 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
     }
     
 }
-

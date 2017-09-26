@@ -25,6 +25,10 @@ open class HFCardCollectionViewCell: UICollectionViewCell {
     open override func awakeFromNib() {
         super.awakeFromNib()
         
+        self.setup()
+    }
+
+    open func setup() {
         self.setupLayer(self)
         
         self.contentView.layer.masksToBounds = true
