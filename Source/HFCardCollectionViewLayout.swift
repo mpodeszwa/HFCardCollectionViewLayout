@@ -241,11 +241,13 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
             if(self.revealedIndex >= 0) {
                 previousRevealedIndex = self.revealedIndex
                 collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, willUnrevealCardAtIndex: self.revealedIndex)
+                (self.revealedCardCell as? HFCardRevealAware)?.cardCollectionViewLayoutWillUnrevealCard?()
                 self.revealedIndex = -1
             }
             self.collectionView?.performBatchUpdates({ self.collectionView?.reloadData() }, completion: {(finished) in
                 if(previousRevealedIndex >= 0) {
                     collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, didUnrevealCardAtIndex: previousRevealedIndex)
+                    (self.revealedCardCell as? HFCardRevealAware)?.cardCollectionViewLayoutWillUnrevealCard?()
                 }
             })
         }
@@ -313,28 +315,36 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
             if(self.revealedCardIsFlipped == true) {
                 self.flipRevealedCardBack(completion: {
                     self.collectionView?.isScrollEnabled = true
+                    let cell = self.revealedCardCell
                     self.deinitializeRevealedCard()
                     collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, willUnrevealCardAtIndex: self.revealedIndex)
+                    (cell as? HFCardRevealAware)?.cardCollectionViewLayoutWillUnrevealCard?()
                     self.revealedIndex = -1
                     self.collectionView?.performBatchUpdates({ self.collectionView?.reloadData() }, completion: { (finished) in
                         collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, didUnrevealCardAtIndex: oldRevealedIndex)
+                        (cell as? HFCardRevealAware)?.cardCollectionViewLayoutDidUnrevealCard?()
                         completion?()
                     })
                 })
             } else {
                 self.collectionView?.isScrollEnabled = true
+                let cell = self.revealedCardCell
                 self.deinitializeRevealedCard()
                 collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, willUnrevealCardAtIndex: self.revealedIndex)
+                (cell as? HFCardRevealAware)?.cardCollectionViewLayoutWillUnrevealCard?()
                 self.revealedIndex = -1
                 self.collectionView?.performBatchUpdates({ self.collectionView?.reloadData() }, completion: { (finished) in
                     collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, didUnrevealCardAtIndex: oldRevealedIndex)
+                    (cell as? HFCardRevealAware)?.cardCollectionViewLayoutDidUnrevealCard?()
                     completion?()
                 })
             }
         } else {
+            let cell = self.revealedCardCell
             if(index < 0 && self.revealedIndex >= 0) {
                 self.deinitializeRevealedCard()
                 collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, willUnrevealCardAtIndex: self.revealedIndex)
+                (cell as? HFCardRevealAware)?.cardCollectionViewLayoutWillUnrevealCard?()
             }
             if index >= 0 {
                 self.revealedIndex = index
@@ -348,6 +358,7 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
                 
                 self.collectionView?.performBatchUpdates({ self.collectionView?.reloadData() }, completion: { (finished) in
                     collectionViewLayoutDelegate?.cardCollectionViewLayout?(self, didRevealCardAtIndex: self.revealedIndex)
+                    (self.revealedCardCell as? HFCardRevealAware)?.cardCollectionViewLayoutDidRevealCard?()
                     completion?()
                 })
             } else if(self.revealedIndex >= 0) {
@@ -871,6 +882,7 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
     
     private func initializeRevealedCard() -> Bool {
         if let cell = self.collectionView?.cellForItem(at: IndexPath(item: self.revealedIndex, section: 0)) {
+            (revealedCardCell as? HFCardRevealAware)?.cardCollectionViewLayoutWillRevealCard?()
             self.revealedCardCell = cell
             self.revealedCardPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.revealedCardPanGestureHandler))
             self.revealedCardPanGestureRecognizer?.delegate = self
