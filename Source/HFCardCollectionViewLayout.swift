@@ -882,7 +882,7 @@ open class HFCardCollectionViewLayout: UICollectionViewLayout, UIGestureRecogniz
     
     private func initializeRevealedCard() -> Bool {
         if let cell = self.collectionView?.cellForItem(at: IndexPath(item: self.revealedIndex, section: 0)) {
-            (revealedCardCell as? HFCardRevealAware)?.cardCollectionViewLayoutWillRevealCard?()
+            (cell as? HFCardRevealAware)?.cardCollectionViewLayoutWillRevealCard?()
             self.revealedCardCell = cell
             self.revealedCardPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.revealedCardPanGestureHandler))
             self.revealedCardPanGestureRecognizer?.delegate = self
